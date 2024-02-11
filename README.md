@@ -20,7 +20,7 @@ Follow these steps to get your development environment set up:
    ```
 2. **Build and Run the Container**:
     ```bash
-    docker-compose up -d
+    docker-compose up --build -d
     ```
 3. **Stopping the Application**:
     ```bash
