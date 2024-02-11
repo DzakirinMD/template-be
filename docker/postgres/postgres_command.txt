@@ -1,4 +1,4 @@
-This postgres is a standalone DB for development only
+This postgres is a standalone DB for development only. Individual Run
 
 sudo docker build -t dev-db-postgres .
 sudo docker run -itd --name dev-db-postgres -p 5435:5432 dev-db-postgres

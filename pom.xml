@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.dzakirin</groupId>
 	<artifactId>template-be</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>template-be</name>
 	<description>Template for BE</description>
 
