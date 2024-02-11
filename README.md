@@ -10,13 +10,27 @@ This project, `template-be`, serves as a Spring Boot backend template. It is des
 - **Documentation**: **SpringDoc** is employed to automatically generate OpenAPI documentation for the API.
 - **Code Simplification**: **Lombok** library is used to reduce boilerplate code like getters, setters, and constructors.
 
+## Getting Started
+Follow these steps to get your development environment set up:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/DzakirinMD/template-be.git
+   cd template-be
+   ```
+2. **Build and Run the Container**:
+    ```bash
+    docker-compose up --build -d
+    ```
+3. **Stopping the Application**:
+    ```bash
+    docker-compose down
+    ```   
+
 ## API Documentation
 - **Swagger UI**: Explore and interact with the API's endpoints via Swagger UI. Access it at [Swagger UI](http://localhost:8080/swagger-ui/index.html).
 - **API Docs (Web)**: View the API documentation in a web format at [API Docs](http://localhost:8080/api-docs).
 - **Download API Docs**: The API documentation can be downloaded in YAML format from [API Docs YAML](http://localhost:8080/api-docs.yaml).
-
-## Getting Started
-(Here you can add instructions on how to set up, configure, and run the project locally, along with any prerequisites.)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/DzakirinMD/template-be/blob/main/LICENSE) file for details.
