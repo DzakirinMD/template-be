@@ -14,4 +14,5 @@ public class EmployeeDto {
     private String lastName;
     @NotNull
     private String email;
+    private String address;
 }
