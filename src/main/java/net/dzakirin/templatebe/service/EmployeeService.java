@@ -2,6 +2,7 @@ package net.dzakirin.templatebe.service;
 
 import net.dzakirin.templatebe.dto.EmployeeDto;
 import net.dzakirin.templatebe.exception.ResourceNotFoundException;
+import net.dzakirin.templatebe.mapper.EmployeeManualMapper;
 import net.dzakirin.templatebe.mapper.EmployeeMapper;
 import net.dzakirin.templatebe.repo.EmployeeRepo;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import java.util.UUID;
 
 @Service
 public class EmployeeService {
+
+    private static final String EMPLOYEE_NOT_FOUND = "Employee id not found : ";
 
     private final EmployeeRepo employeeRepo;
     private final EmployeeMapper employeeMapper;
@@ -29,22 +32,31 @@ public class EmployeeService {
 
     public EmployeeDto findById(UUID employeeId) {
         var employeeEntity = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee id not found : " + employeeId));
+                .orElseThrow(() -> new ResourceNotFoundException(EMPLOYEE_NOT_FOUND + employeeId));
 
-        return employeeMapper.toEmployeeDto(employeeEntity);
+        return EmployeeManualMapper.toEmployeeDto(employeeEntity);
     }
 
     public List<EmployeeDto> findAll() {
         var employeeEntities = employeeRepo.findAll();
 
         return employeeEntities.stream()
-                .map(employeeMapper::toEmployeeDto)
+                .map(EmployeeManualMapper::toEmployeeDto) // Use the manual mapper here
                 .toList();
     }
 
+    public List<EmployeeDto> findByAddressPostCode(String postcode) {
+        var employees = employeeRepo.findByAddressPostCode(postcode); // You need to implement this method in your repository
+        return employees.stream()
+                .map(EmployeeManualMapper::toEmployeeDto)
+                .toList();
+    }
+
+
+
     public EmployeeDto updateEmployee(UUID employeeId, EmployeeDto employeeDto) {
         var employeeEntity = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee id not found : " + employeeId));
+                .orElseThrow(() -> new ResourceNotFoundException(EMPLOYEE_NOT_FOUND + employeeId));
 
         employeeEntity.setFirstName(employeeDto.getFirstName());
         employeeEntity.setLastName(employeeDto.getLastName());
@@ -56,7 +68,7 @@ public class EmployeeService {
 
     public void deleteEmployee(UUID employeeId) {
         var employeeEntity = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee id not found : " + employeeId));
+                .orElseThrow(() -> new ResourceNotFoundException(EMPLOYEE_NOT_FOUND + employeeId));
 
         employeeRepo.delete(employeeEntity);
     }

@@ -67,6 +67,15 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.findAll());
     }
 
+    @GetMapping("/address/{postcode}")
+    @Operation(
+            summary = "Find Employees by Address Postcode",
+            description = "An API to find all employees by a given address postcode"
+    )
+    public ResponseEntity<List<EmployeeDto>> findByAddressPostCode(@PathVariable String postcode) {
+        return ResponseEntity.ok(employeeService.findByAddressPostCode(postcode));
+    }
+
     @PutMapping("/{employeeId}")
     @Operation(
             summary = "Update Employee",
