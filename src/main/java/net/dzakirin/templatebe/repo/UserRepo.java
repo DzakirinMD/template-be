@@ -1,6 +1,6 @@
 package net.dzakirin.templatebe.repo;
 
-import net.dzakirin.templatebe.model.EmployeeEntity;
+import net.dzakirin.templatebe.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface EmployeeRepo extends JpaRepository<EmployeeEntity, UUID> {
+public interface UserRepo extends JpaRepository<UserEntity, UUID> {
 
-    @Query(value = "SELECT * FROM employee e WHERE e.address ->> 'postcode' = :postcode", nativeQuery = true)
-    List<EmployeeEntity> findByAddressPostCode(@Param("postcode") String postcode);
+    @Query(value = "SELECT * FROM user e WHERE e.address ->> 'postcode' = :postcode", nativeQuery = true)
+    List<UserEntity> findByAddressPostCode(@Param("postcode") String postcode);
 }
