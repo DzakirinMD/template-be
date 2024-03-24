@@ -1,20 +1,15 @@
 package net.dzakirin.templatebe.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.util.UUID;
 
 @Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "employee")
-public class EmployeeEntity {
+@Table(name = "\"user\"") // Quotes are used because "user" is a reserved word in PostgreSQL
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,9 +23,9 @@ public class EmployeeEntity {
     private String email;
 
     @Column(columnDefinition = "jsonb")
+    @ColumnTransformer(
+            read = "address::text",
+            write = "?::jsonb"
+    )
     private String address;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private DepartmentEntity department;
 }
