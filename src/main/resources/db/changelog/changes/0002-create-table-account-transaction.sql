@@ -12,6 +12,6 @@ CREATE TABLE transaction (
     account_id UUID NOT NULL,
     amount NUMERIC(19, 4) NOT NULL,
     transaction_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    type VARCHAR(50) NOT NULL,
+    transaction_type VARCHAR(50) NOT NULL,
     FOREIGN KEY (account_id) REFERENCES account(id)
 );

@@ -1,6 +1,6 @@
 package net.dzakirin.templatebe.service;
 
-import net.dzakirin.templatebe.dto.UserDto;
+import net.dzakirin.templatebe.dto.response.UserDto;
 import net.dzakirin.templatebe.exception.ResourceNotFoundException;
 import net.dzakirin.templatebe.mapper.UserMapper;
 import net.dzakirin.templatebe.repo.UserRepo;
@@ -9,49 +9,45 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static net.dzakirin.templatebe.constant.ErrorCodes.USER_NOT_FOUND;
+
 @Service
 public class UserService {
 
-    private static final String USER_NOT_FOUND = "User id not found : ";
-
     private final UserRepo userRepo;
-    private final UserMapper userMapper;
 
-    public UserService(UserRepo userRepo, UserMapper userMapper) {
+    public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.userMapper = userMapper;
     }
 
     public UserDto createUser(UserDto userDto) {
-        var userEntity = userMapper.toUserEntity(userDto);
+        var userEntity = UserMapper.toUserEntity(userDto);
         userRepo.save(userEntity);
 
-        return userMapper.toUserDto(userEntity);
+        return UserMapper.toUserDto(userEntity);
     }
 
     public UserDto findById(UUID userId) {
         var userEntity = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
 
-        return userMapper.toUserDto(userEntity);
+        return UserMapper.toUserDto(userEntity);
     }
 
     public List<UserDto> findAll() {
         var userEntities = userRepo.findAll();
 
         return userEntities.stream()
-                .map(userMapper::toUserDto) // Use the manual mapper here
+                .map(UserMapper::toUserDto)
                 .toList();
     }
 
     public List<UserDto> findByAddressPostCode(String postcode) {
-        var users = userRepo.findByAddressPostCode(postcode); // You need to implement this method in your repository
+        var users = userRepo.findByAddressPostCode(postcode);
         return users.stream()
-                .map(userMapper::toUserDto)
+                .map(UserMapper::toUserDto)
                 .toList();
     }
-
-
 
     public UserDto updateUser(UUID userId, UserDto userDto) {
         var userEntity = userRepo.findById(userId)
@@ -62,7 +58,7 @@ public class UserService {
         userEntity.setEmail(userDto.getEmail());
         userRepo.save(userEntity);
 
-        return userMapper.toUserDto(userEntity);
+        return UserMapper.toUserDto(userEntity);
     }
 
     public void deleteUser(UUID userId) {

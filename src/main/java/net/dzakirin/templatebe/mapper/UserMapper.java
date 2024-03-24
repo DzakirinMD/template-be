@@ -1,15 +1,50 @@
 package net.dzakirin.templatebe.mapper;
 
-import net.dzakirin.templatebe.dto.UserDto;
+import lombok.experimental.UtilityClass;
+import net.dzakirin.templatebe.dto.response.AccountDto;
+import net.dzakirin.templatebe.dto.response.UserDto;
+import net.dzakirin.templatebe.model.AccountEntity;
 import net.dzakirin.templatebe.model.UserEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@UtilityClass
+public class UserMapper {
 
-    @Mapping(target = "id", ignore = true) // Assuming you don't want to map the ID for creation
-    UserEntity toUserEntity(UserDto dto);
+    public static UserEntity toUserEntity(UserDto dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    UserDto toUserDto(UserEntity entity);
+        UserEntity entity = new UserEntity();
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setEmail(dto.getEmail());
+        entity.setAddress(dto.getAddress());
+
+        return entity;
+    }
+
+    public static UserDto toUserDto(UserEntity userEntity) {
+        if (userEntity == null) {
+            return null;
+        }
+
+        return UserDto.builder()
+                .id(userEntity.getId())
+                .firstName(userEntity.getFirstName())
+                .lastName(userEntity.getLastName())
+                .email(userEntity.getEmail())
+                .address(userEntity.getAddress())
+                .accountDtoList(
+                        userEntity.getAccounts() != null ?
+                                userEntity.getAccounts().stream().map(UserMapper::toAccountDto).toList()
+                                : null)
+                .build();
+    }
+
+    private static AccountDto toAccountDto(AccountEntity accountEntity) {
+        return AccountDto.builder()
+                .accountNumber(accountEntity.getAccountNumber())
+                .balance(accountEntity.getBalance())
+                .build();
+    }
 }
