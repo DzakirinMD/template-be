@@ -57,7 +57,7 @@ public class AccountService {
     @Transactional
     public void createDeposit(AccountTransactionDto accountTransactionDto) {
         var account = accountRepo.findByAccountNumber(accountTransactionDto.getAccountNumber())
-                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + accountTransactionDto.getAccountNumber()));
+                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND.getMessage(accountTransactionDto.getAccountNumber())));
 
         // Update account balance
         account.setBalance(account.getBalance().add(accountTransactionDto.getAmount()));
@@ -73,23 +73,23 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountDto createWithdrawal(AccountTransactionDto withdrawDto) {
-        var account = accountRepo.findByAccountNumber(withdrawDto.getAccountNumber())
-                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + withdrawDto.getAccountNumber()));
+    public AccountDto createWithdrawal(AccountTransactionDto accountTransactionDto) {
+        var account = accountRepo.findByAccountNumber(accountTransactionDto.getAccountNumber())
+                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND.getMessage(accountTransactionDto.getAccountNumber())));
 
         // Check for sufficient balance
-        if (account.getBalance().compareTo(withdrawDto.getAmount()) < 0) {
+        if (account.getBalance().compareTo(accountTransactionDto.getAmount()) < 0) {
             throw new InsufficientFundsException("Insufficient funds for withdrawal.");
         }
 
         // Update account balance
-        account.setBalance(account.getBalance().subtract(withdrawDto.getAmount()));
+        account.setBalance(account.getBalance().subtract(accountTransactionDto.getAmount()));
         accountRepo.save(account);
 
         // Record transaction
         var transaction = new TransactionEntity();
         transaction.setAccount(account);
-        transaction.setAmount(withdrawDto.getAmount().negate()); // Negative value for withdrawal
+        transaction.setAmount(accountTransactionDto.getAmount().negate()); // Negative value for withdrawal
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTransactionType(TransactionType.WITHDRAWAL);
         transactionRepo.save(transaction);

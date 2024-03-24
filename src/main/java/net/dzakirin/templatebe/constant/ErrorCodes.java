@@ -1,10 +1,16 @@
 package net.dzakirin.templatebe.constant;
 
-import lombok.experimental.UtilityClass;
+public enum ErrorCodes {
+    ACCOUNT_NOT_FOUND("Account id not found : %s"),
+    USER_NOT_FOUND("User id not found : %s");
 
-@UtilityClass
-public class ErrorCodes {
+    private final String messageTemplate;
 
-    public static final String ACCOUNT_NOT_FOUND = "Account id not found : ";
-    public static final String USER_NOT_FOUND = "User id not found : ";
+    ErrorCodes(String messageTemplate) {
+        this.messageTemplate = messageTemplate;
+    }
+
+    public String getMessage(String... args) {
+        return String.format(messageTemplate, (Object[]) args);
+    }
 }

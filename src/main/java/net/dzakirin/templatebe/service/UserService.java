@@ -29,7 +29,7 @@ public class UserService {
 
     public UserDto findById(UUID userId) {
         var userEntity = userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND.getMessage(String.valueOf(userId))));
 
         return UserMapper.toUserDto(userEntity);
     }
@@ -51,7 +51,7 @@ public class UserService {
 
     public UserDto updateUser(UUID userId, UserDto userDto) {
         var userEntity = userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND.getMessage(String.valueOf(userId))));
 
         userEntity.setFirstName(userDto.getFirstName());
         userEntity.setLastName(userDto.getLastName());
@@ -63,7 +63,7 @@ public class UserService {
 
     public void deleteUser(UUID userId) {
         var userEntity = userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND.getMessage(String.valueOf(userId))));
 
         userRepo.delete(userEntity);
     }
