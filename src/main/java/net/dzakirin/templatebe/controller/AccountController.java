@@ -1,7 +1,8 @@
 package net.dzakirin.templatebe.controller;
 
 import net.dzakirin.templatebe.dto.request.CreateAccountDto;
-import net.dzakirin.templatebe.dto.response.DepositDto;
+import net.dzakirin.templatebe.dto.request.AccountTransactionDto;
+import net.dzakirin.templatebe.dto.response.AccountDto;
 import net.dzakirin.templatebe.dto.response.UserDto;
 import net.dzakirin.templatebe.service.AccountService;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,14 @@ public class AccountController {
     }
 
     @PostMapping("/deposit")
-    public ResponseEntity<Void> createDeposit(@RequestBody DepositDto depositDto) {
-        accountService.createDeposit(depositDto);
+    public ResponseEntity<Void> createDeposit(@RequestBody AccountTransactionDto accountTransactionDto) {
+        accountService.createDeposit(accountTransactionDto);
         return ResponseEntity.status(204).build();
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<AccountDto> createWithdrawal(@RequestBody AccountTransactionDto accountTransactionDto) {
+        var accountDto = accountService.createWithdrawal(accountTransactionDto);
+        return ResponseEntity.ok(accountDto);
     }
 }

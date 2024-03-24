@@ -1,4 +1,4 @@
-package net.dzakirin.templatebe.config; // Adjust the package name as per your project structure
+package net.dzakirin.templatebe.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

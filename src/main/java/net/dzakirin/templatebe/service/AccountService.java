@@ -2,9 +2,12 @@ package net.dzakirin.templatebe.service;
 
 import net.dzakirin.templatebe.constant.TransactionType;
 import net.dzakirin.templatebe.dto.request.CreateAccountDto;
-import net.dzakirin.templatebe.dto.response.DepositDto;
+import net.dzakirin.templatebe.dto.request.AccountTransactionDto;
+import net.dzakirin.templatebe.dto.response.AccountDto;
 import net.dzakirin.templatebe.dto.response.UserDto;
+import net.dzakirin.templatebe.exception.InsufficientFundsException;
 import net.dzakirin.templatebe.exception.ResourceNotFoundException;
+import net.dzakirin.templatebe.mapper.AccountMapper;
 import net.dzakirin.templatebe.mapper.UserMapper;
 import net.dzakirin.templatebe.model.AccountEntity;
 import net.dzakirin.templatebe.model.TransactionEntity;
@@ -52,21 +55,46 @@ public class AccountService {
     }
 
     @Transactional
-    public void createDeposit(DepositDto depositDto) {
-        var account = accountRepo.findByAccountNumber(depositDto.getAccountNumber())
-                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + depositDto.getAccountNumber()));
+    public void createDeposit(AccountTransactionDto accountTransactionDto) {
+        var account = accountRepo.findByAccountNumber(accountTransactionDto.getAccountNumber())
+                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + accountTransactionDto.getAccountNumber()));
 
         // Update account balance
-        account.setBalance(account.getBalance().add(depositDto.getAmount()));
+        account.setBalance(account.getBalance().add(accountTransactionDto.getAmount()));
         accountRepo.save(account);
 
         // Record transaction
         var transaction = new TransactionEntity();
         transaction.setAccount(account);
-        transaction.setAmount(depositDto.getAmount());
+        transaction.setAmount(accountTransactionDto.getAmount());
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setTransactionType(TransactionType.DEPOSIT);
         transactionRepo.save(transaction);
+    }
+
+    @Transactional
+    public AccountDto createWithdrawal(AccountTransactionDto withdrawDto) {
+        var account = accountRepo.findByAccountNumber(withdrawDto.getAccountNumber())
+                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + withdrawDto.getAccountNumber()));
+
+        // Check for sufficient balance
+        if (account.getBalance().compareTo(withdrawDto.getAmount()) < 0) {
+            throw new InsufficientFundsException("Insufficient funds for withdrawal.");
+        }
+
+        // Update account balance
+        account.setBalance(account.getBalance().subtract(withdrawDto.getAmount()));
+        accountRepo.save(account);
+
+        // Record transaction
+        var transaction = new TransactionEntity();
+        transaction.setAccount(account);
+        transaction.setAmount(withdrawDto.getAmount().negate()); // Negative value for withdrawal
+        transaction.setTransactionDate(LocalDateTime.now());
+        transaction.setTransactionType(TransactionType.WITHDRAWAL);
+        transactionRepo.save(transaction);
+
+        return AccountMapper.toAccountDto(account);
     }
 
     private String generateAccountNumber() {
