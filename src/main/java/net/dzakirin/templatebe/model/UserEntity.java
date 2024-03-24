@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnTransformer;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -28,4 +29,7 @@ public class UserEntity {
             write = "?::jsonb"
     )
     private String address;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AccountEntity> accounts;
 }
