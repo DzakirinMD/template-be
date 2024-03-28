@@ -3,6 +3,7 @@ package net.dzakirin.templatebe.service;
 import net.dzakirin.templatebe.constant.TransactionType;
 import net.dzakirin.templatebe.dto.request.CreateAccountDto;
 import net.dzakirin.templatebe.dto.request.AccountTransactionDto;
+import net.dzakirin.templatebe.dto.request.TransferRequestDto;
 import net.dzakirin.templatebe.dto.response.AccountDto;
 import net.dzakirin.templatebe.dto.response.UserDto;
 import net.dzakirin.templatebe.exception.InsufficientFundsException;
@@ -17,6 +18,7 @@ import net.dzakirin.templatebe.repo.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.UUID;
@@ -97,8 +99,46 @@ public class AccountService {
         return AccountMapper.toAccountDto(account);
     }
 
+    @Transactional
+    public AccountDto transferMoney(TransferRequestDto transferRequestDto) {
+        var sourceAccount = findByAccountNumber(transferRequestDto.getSourceAccountNumber());
+        var destinationAccount = findByAccountNumber(transferRequestDto.getDestinationAccountNumber());
+
+        if (sourceAccount.getBalance().compareTo(transferRequestDto.getAmount()) < 0) {
+            throw new InsufficientFundsException("Insufficient funds for transfer.");
+        }
+
+        // Withdraw from source
+        sourceAccount.setBalance(sourceAccount.getBalance().subtract(transferRequestDto.getAmount()));
+        accountRepo.save(sourceAccount);
+
+        // Deposit into destination
+        destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequestDto.getAmount()));
+        accountRepo.save(destinationAccount);
+
+        // Record transactions (withdrawal and then deposit)
+        recordTransaction(sourceAccount, transferRequestDto.getAmount().negate());
+        recordTransaction(destinationAccount, transferRequestDto.getAmount());
+
+        return AccountMapper.toAccountDto(sourceAccount);
+    }
+
+    private void recordTransaction(AccountEntity account, BigDecimal amount) {
+        var transaction = new TransactionEntity();
+        transaction.setAccount(account);
+        transaction.setAmount(amount);
+        transaction.setTransactionDate(LocalDateTime.now());
+        transaction.setTransactionType(TransactionType.TRANSFER);
+        transactionRepo.save(transaction);
+    }
+
     private String generateAccountNumber() {
         int randomNumber = random.nextInt(99999999) + 1; // Ensures the number is between 1 and 99999999
         return "ACC" + String.format("%08d", randomNumber); // Ensures the number is always 8 digits
+    }
+
+    private AccountEntity findByAccountNumber(String accountNumber) {
+        return accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND.getMessage(accountNumber)));
     }
 }
