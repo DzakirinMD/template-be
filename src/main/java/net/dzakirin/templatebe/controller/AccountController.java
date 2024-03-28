@@ -2,6 +2,7 @@ package net.dzakirin.templatebe.controller;
 
 import net.dzakirin.templatebe.dto.request.CreateAccountDto;
 import net.dzakirin.templatebe.dto.request.AccountTransactionDto;
+import net.dzakirin.templatebe.dto.request.TransferRequestDto;
 import net.dzakirin.templatebe.dto.response.AccountDto;
 import net.dzakirin.templatebe.dto.response.UserDto;
 import net.dzakirin.templatebe.service.AccountService;
@@ -36,6 +37,12 @@ public class AccountController {
     @PostMapping("/withdraw")
     public ResponseEntity<AccountDto> createWithdrawal(@RequestBody AccountTransactionDto accountTransactionDto) {
         var accountDto = accountService.createWithdrawal(accountTransactionDto);
+        return ResponseEntity.ok(accountDto);
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<AccountDto> transferMoney(@RequestBody TransferRequestDto transferRequestDto) {
+        var accountDto = accountService.transferMoney(transferRequestDto);
         return ResponseEntity.ok(accountDto);
     }
 }
