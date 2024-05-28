@@ -1,0 +1,7 @@
+query {
+    country(code: "countryCode") {
+        name
+        capital
+        currency
+    }
+}
