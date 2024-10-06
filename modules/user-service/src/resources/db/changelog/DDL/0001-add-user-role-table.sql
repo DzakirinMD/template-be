@@ -4,8 +4,6 @@ CREATE TABLE "user" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(20) NOT NULL UNIQUE,
     password VARCHAR(120) NOT NULL,
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
     email VARCHAR(255) NOT NULL UNIQUE,
     CONSTRAINT idx_user_username UNIQUE (username)
 );
