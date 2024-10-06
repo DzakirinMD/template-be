@@ -18,7 +18,8 @@
     <modules>
         <module>modules/approval-system</module>
 		<module>modules/cash-management</module>
-	</modules>
+        <module>modules/user-service</module>
+    </modules>
 
     <properties>
 		<java.version>17</java.version>
