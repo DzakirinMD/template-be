@@ -1,0 +1,26 @@
+@startuml
+actor Client
+actor Server
+
+== User Registration ==
+
+Client -> Server: POST /api/auth/signup {username, email, role, password}
+Server -> Server: Check existing user
+Server -> Server: Save user to database
+Server --> Client: Message("Registered successfully!")
+
+== User Login ==
+
+Client -> Server: POST /api/auth/signin {username, password}
+Server -> Server: Authenticate user
+Server -> Server: Create JWT
+Server --> Client: JwtResponse(token, user info, authorities)
+
+== Access Resource ==
+
+Client -> Server: Request data with JWT in Authorization Header
+Server -> Server: Check JWT Signature
+Server -> Server: Get user info & authorize
+Server --> Client: Response based on authorities
+
+@enduml
