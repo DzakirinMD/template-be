@@ -1,11 +1,12 @@
-package net.dzakirin.userservice.dto.request;
+package net.dzakirin.userservice.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import net.dzakirin.userservice.constant.RoleName;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class RegisterRequest {
@@ -18,9 +19,16 @@ public class RegisterRequest {
     @Email
     private String email;
 
-    private Set<String> role;
-
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
+
+    @NotBlank
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
+
+    @NotBlank
+    private List<RoleName> roles;
 }

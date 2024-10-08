@@ -2,6 +2,7 @@ package net.dzakirin.userservice.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import net.dzakirin.userservice.constant.RoleName;
 
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "roles")
-public class RoleEntity {
+@Table(name = "role")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,6 +22,6 @@ public class RoleEntity {
     @Column(length = 20)
     private RoleName roleName;
 
-    @ManyToMany(mappedBy = "roleEntities")
-    private List<UserEntity> userEntities;
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users;
 }
