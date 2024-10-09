@@ -1,14 +1,21 @@
 package net.dzakirin.userservice.auth.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import net.dzakirin.userservice.constant.RoleName;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RegisterRequest {
     @NotBlank
     @Size(min = 3, max = 20)
@@ -30,5 +37,5 @@ public class RegisterRequest {
     private String lastName;
 
     @NotBlank
-    private List<RoleName> roles;
+    private List<String> roles;
 }

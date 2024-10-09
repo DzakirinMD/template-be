@@ -3,8 +3,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <include file="DDL/0001-add-user-role-table.sql" relativeToChangelogFile="true"/>
-    <include file="DML/0001-insert-user-role-table.sql" relativeToChangelogFile="true"/>
-    <include file="DDL/0002-add-refresh-token-table.sql" relativeToChangelogFile="true"/>
+    <include file="DDL/0001-create-user-role-permission-tables.sql" relativeToChangelogFile="true"/>
+    <include file="DML/0001-insert-role-permission-data.sql" relativeToChangelogFile="true"/>
+    <include file="DDL/0002-create-refresh-token-table.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

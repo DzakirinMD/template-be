@@ -1,16 +1,22 @@
 package net.dzakirin.userservice.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.ToString;
-import net.dzakirin.userservice.constant.RoleName;
+import lombok.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-@Data
+@Getter
+@Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "role")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
 
     @Id
@@ -18,10 +24,20 @@ public class Role {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private RoleName roleName;
+    private String roleName;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<UserRole> userRoles;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<RolePermission> rolePermissions;
+
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        var authorities = rolePermissions
+                .stream()
+                .map(rolePermission -> new SimpleGrantedAuthority(rolePermission.getPermission().getPermissionName()))
+                .collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.roleName));
+        return authorities;
+    }
 }
