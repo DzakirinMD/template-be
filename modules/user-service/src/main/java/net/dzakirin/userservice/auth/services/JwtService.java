@@ -5,11 +5,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import net.dzakirin.userservice.model.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,17 +37,27 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public String generateToken(UserDetails userDetails) {
+  public String generateToken(Authentication authentication) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("roles", userDetails.getAuthorities().stream()
+    claims.put("roles", authentication.getAuthorities().stream()
             .map(authority -> authority.getAuthority())
             .filter(auth -> auth.startsWith("ROLE_")) // Filter roles
             .toList());
-    claims.put("permissions", userDetails.getAuthorities().stream()
+    claims.put("permissions", authentication.getAuthorities().stream()
             .map(authority -> authority.getAuthority())
             .filter(auth -> !auth.startsWith("ROLE_")) // Filter permissions
             .toList());
-    return generateToken(claims, userDetails);
+
+    User userPrinciple = (User) authentication.getPrincipal();
+
+    return Jwts
+            .builder()
+            .setClaims(claims)
+            .setSubject(userPrinciple.getUsername())
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+            .compact();
   }
 
   public String generateToken(

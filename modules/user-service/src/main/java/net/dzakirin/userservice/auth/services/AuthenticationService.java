@@ -12,10 +12,12 @@ import net.dzakirin.userservice.repository.RoleRepository;
 import net.dzakirin.userservice.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +33,6 @@ public class AuthenticationService {
   @Transactional
   public RegisterResponse register(RegisterRequest request) {
     var listOfRoles = roleRepository.findByRoleNameIn(request.getRoles());
-
     if (listOfRoles.isEmpty() || listOfRoles.size() != request.getRoles().size()) {
       throw new NotFoundException("One or more roles not found");
     }
@@ -54,7 +55,13 @@ public class AuthenticationService {
     var savedUser = userRepository.save(user);
 
     // Generate JWT tokens and save
-    var jwtToken = jwtService.generateToken(savedUser);
+    var authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+            )
+    );
+    var jwtToken = jwtService.generateToken(authentication);
     var refreshToken = jwtService.generateRefreshToken(savedUser);
     tokenService.saveUserToken(savedUser, jwtToken);
 
@@ -71,15 +78,20 @@ public class AuthenticationService {
   }
 
   public LoginResponse login(LoginRequest request) {
-    authenticationManager.authenticate(
+    var authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                     request.getUsername(),
                     request.getPassword()
             )
     );
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
     var user = userRepository.findByUsername(request.getUsername())
             .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+
+
+
+    var jwtToken = jwtService.generateToken(authentication);
     var refreshToken = jwtService.generateRefreshToken(user);
     tokenService.revokeAllUserTokens(user);
     tokenService.saveUserToken(user, jwtToken);
