@@ -35,7 +35,16 @@ public class JwtService {
   }
 
   public String generateToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("roles", userDetails.getAuthorities().stream()
+            .map(authority -> authority.getAuthority())
+            .filter(auth -> auth.startsWith("ROLE_")) // Filter roles
+            .toList());
+    claims.put("permissions", userDetails.getAuthorities().stream()
+            .map(authority -> authority.getAuthority())
+            .filter(auth -> !auth.startsWith("ROLE_")) // Filter permissions
+            .toList());
+    return generateToken(claims, userDetails);
   }
 
   public String generateToken(
@@ -45,11 +54,19 @@ public class JwtService {
     return buildToken(extraClaims, userDetails, jwtExpiration);
   }
 
-  public String generateRefreshToken(
-      UserDetails userDetails
-  ) {
-    return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+  public String generateRefreshToken(UserDetails userDetails) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("roles", userDetails.getAuthorities().stream()
+            .map(authority -> authority.getAuthority())
+            .filter(auth -> auth.startsWith("ROLE_")) // Filter roles
+            .toList());
+    claims.put("permissions", userDetails.getAuthorities().stream()
+            .map(authority -> authority.getAuthority())
+            .filter(auth -> !auth.startsWith("ROLE_")) // Filter permissions
+            .toList());
+    return buildToken(claims, userDetails, refreshExpiration);
   }
+
 
   private String buildToken(
           Map<String, Object> extraClaims,

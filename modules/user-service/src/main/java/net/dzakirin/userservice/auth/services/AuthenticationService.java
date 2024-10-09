@@ -36,7 +36,7 @@ public class AuthenticationService {
       throw new NotFoundException("One or more roles not found");
     }
 
-    // Save the user and userRoles in the database
+    // Save the user and userRoles
     var user = User.builder()
             .username(request.getUsername())
             .email(request.getEmail())
@@ -53,9 +53,10 @@ public class AuthenticationService {
     user.setUserRoles(userRoles);
     var savedUser = userRepository.save(user);
 
-    // Generate JWT tokens
+    // Generate JWT tokens and save
     var jwtToken = jwtService.generateToken(savedUser);
     var refreshToken = jwtService.generateRefreshToken(savedUser);
+    tokenService.saveUserToken(savedUser, jwtToken);
 
     return RegisterResponse.builder()
             .id(savedUser.getId())
