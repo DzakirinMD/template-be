@@ -37,34 +37,25 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public String generateToken(Authentication authentication) {
+  public String generateToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("roles", authentication.getAuthorities().stream()
+    claims.put("roles", userDetails.getAuthorities().stream()
             .map(authority -> authority.getAuthority())
             .filter(auth -> auth.startsWith("ROLE_")) // Filter roles
             .toList());
-    claims.put("permissions", authentication.getAuthorities().stream()
+    claims.put("permissions", userDetails.getAuthorities().stream()
             .map(authority -> authority.getAuthority())
             .filter(auth -> !auth.startsWith("ROLE_")) // Filter permissions
             .toList());
 
-    User userPrinciple = (User) authentication.getPrincipal();
-
     return Jwts
             .builder()
             .setClaims(claims)
-            .setSubject(userPrinciple.getUsername())
+            .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
-  }
-
-  public String generateToken(
-      Map<String, Object> extraClaims,
-      UserDetails userDetails
-  ) {
-    return buildToken(extraClaims, userDetails, jwtExpiration);
   }
 
   public String generateRefreshToken(UserDetails userDetails) {
@@ -77,21 +68,13 @@ public class JwtService {
             .map(authority -> authority.getAuthority())
             .filter(auth -> !auth.startsWith("ROLE_")) // Filter permissions
             .toList());
-    return buildToken(claims, userDetails, refreshExpiration);
-  }
 
-
-  private String buildToken(
-          Map<String, Object> extraClaims,
-          UserDetails userDetails,
-          long expiration
-  ) {
     return Jwts
             .builder()
-            .setClaims(extraClaims)
+            .setClaims(claims)
             .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
+            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
   }
