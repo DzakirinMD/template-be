@@ -19,9 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static net.dzakirin.userservice.constant.ErrorCodes.USERNAME_NOT_FOUND;
 import static net.dzakirin.userservice.constant.ErrorCodes.USER_NOT_FOUND;
 
 @Service
@@ -59,8 +63,7 @@ public class UserService {
 
         // Call external service to generate JWT token using WebClient
         var userDto = UserMapper.toUserDto(user);
-        Mono<GenerateTokenResponseDto> loginResponseMono = authServiceClient.generateToken(userDto);
-        GenerateTokenResponseDto loginResponse = loginResponseMono.block(); // Blocking only for simplicity; in production, handle it reactively.
+        var tokenGenerated = authServiceClient.generateToken(userDto);
 
         return RegisterResponseDto.builder()
                 .id(user.getId())
@@ -69,14 +72,25 @@ public class UserService {
                 .roles(user.getUserRoles().stream()
                         .map(userRole -> userRole.getRole().getRoleName())
                         .toList())
-                .accessToken(loginResponse.getAccessToken())
-                .refreshToken(loginResponse.getRefreshToken())
+                .accessToken(tokenGenerated.getAccessToken())
+                .refreshToken(tokenGenerated.getRefreshToken())
                 .build();
     }
 
-    public UserDto findById(UUID userId) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND.getMessage(String.valueOf(userId))));
+    public UserDto findByUsername(String username) {
+        // Check if the username contains URL-encoded characters
+        String processedUsername = isUrlEncoded(username) ? URLDecoder.decode(username, StandardCharsets.UTF_8) : username;
+
+        var user = userRepository.findByUsername(processedUsername)
+                .orElseThrow(() -> new ResourceNotFoundException(USERNAME_NOT_FOUND.getMessage(processedUsername)));
+
         return UserMapper.toUserDto(user);
+    }
+
+    // Helper method to check if a string contains URL-encoded characters
+    private boolean isUrlEncoded(String value) {
+        // Regex pattern to detect encoded characters like %20, %3A, etc.
+        Pattern urlEncodedPattern = Pattern.compile("%[0-9A-Fa-f]{2}");
+        return urlEncodedPattern.matcher(value).find();
     }
 }

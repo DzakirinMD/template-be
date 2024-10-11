@@ -21,7 +21,6 @@ public class Token {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @Column(unique = true)
     private UUID userId;
 
     @Column(unique = true)

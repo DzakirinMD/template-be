@@ -24,9 +24,9 @@ public class UserController {
         return ResponseEntity.ok(userService.register(request));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> findById(@PathVariable UUID userId) {
-        var userDto = userService.findById(userId);
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> findByUsername(@PathVariable String username) {
+        var userDto = userService.findByUsername(username);
         return ResponseEntity.ok(userDto);
     }
 }

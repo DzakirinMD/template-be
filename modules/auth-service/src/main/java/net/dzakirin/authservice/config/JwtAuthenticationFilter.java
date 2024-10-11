@@ -80,7 +80,6 @@
 //        jwt = authHeader.substring(7);
 //        userName = jwtService.extractUsername(jwt);
 //        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            // TODO:: nanti boleh guna reactive once dah split user service dengan auth service
 //            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
 //            var isTokenValid = tokenRepository.findByToken(jwt)
 //                    .map(t -> !t.isExpired() && !t.isRevoked())

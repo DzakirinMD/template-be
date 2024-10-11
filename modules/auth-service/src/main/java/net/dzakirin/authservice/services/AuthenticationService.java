@@ -2,23 +2,58 @@ package net.dzakirin.authservice.services;
 
 import lombok.RequiredArgsConstructor;
 import net.dzakirin.authservice.dto.UserDto;
+import net.dzakirin.authservice.dto.request.LoginRequest;
 import net.dzakirin.authservice.dto.response.LoginResponse;
+import net.dzakirin.authservice.webclient.UserServiceClient;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-//    private final UserRepository userRepository;
+
     private final JwtService jwtService;
 //    private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-//    private final RoleRepository roleRepository;
-//    private final UserClient
+    private final UserServiceClient userServiceClient;
+
+    public LoginResponse generateToken(UserDto userDto) {
+        var jwtToken = jwtService.generateToken(userDto);
+        var refreshToken = jwtService.generateRefreshToken(userDto);
+        tokenService.saveUserToken(userDto.getId(), jwtToken);
+
+        return LoginResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public LoginResponse login(LoginRequest request) {
+//        var authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.getUsername(),
+//                        request.getPassword()
+//                )
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        var user = userServiceClient.findByUsername(request.getUsername());
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        tokenService.revokeAllUserTokens(user.getId());
+        tokenService.saveUserToken(user.getId(), jwtToken);
+
+        return LoginResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
 
 //    @Transactional
 //    public RegisterResponse register(RegisterRequest request) {
-//        // Todo guna spring web flux - reactive
 //        var listOfRoles = roleRepository.findByRoleNameIn(request.getRoles());
 //        if (listOfRoles.isEmpty() || listOfRoles.size() != request.getRoles().size()) {
 //            throw new NotFoundException("One or more roles not found");
@@ -57,29 +92,7 @@ public class AuthenticationService {
 //                .build();
 //    }
 //
-//    public LoginResponse login(LoginRequest request) {
-//        var authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        request.getUsername(),
-//                        request.getPassword()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        var user = userRepository.findByUsername(request.getUsername())
-//                .orElseThrow();
-//
-//
-//        var jwtToken = jwtService.generateToken(user);
-//        var refreshToken = jwtService.generateRefreshToken(user);
-//        tokenService.revokeAllUserTokens(user);
-//        tokenService.saveUserToken(user, jwtToken);
-//
-//        return LoginResponse.builder()
-//                .accessToken(jwtToken)
-//                .refreshToken(refreshToken)
-//                .build();
-//    }
+
 
 //    public LoginResponse refreshToken(HttpServletRequest request, HttpServletResponse response) {
 //        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -120,14 +133,5 @@ public class AuthenticationService {
 //                .build();
 //    }
 
-    public LoginResponse generateToken(UserDto userDto) {
-        var jwtToken = jwtService.generateToken(userDto);
-        var refreshToken = jwtService.generateRefreshToken(userDto);
-        tokenService.saveUserToken(userDto.getId(), jwtToken);
 
-        return LoginResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
 }

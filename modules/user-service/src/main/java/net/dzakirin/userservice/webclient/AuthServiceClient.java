@@ -13,12 +13,13 @@ public class AuthServiceClient {
 
     private final WebClient authServiceWebClient;
 
-    public Mono<GenerateTokenResponseDto> generateToken(UserDto userDto) {
+    public GenerateTokenResponseDto generateToken(UserDto userDto) {
         return authServiceWebClient
                 .post()
                 .uri("/auth/generate-token")
                 .bodyValue(userDto)
                 .retrieve()
-                .bodyToMono(GenerateTokenResponseDto.class);
+                .bodyToMono(GenerateTokenResponseDto.class)
+                .block();
     }
 }

@@ -2,7 +2,7 @@
 
 CREATE TABLE token (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL UNIQUE,
+    user_id UUID NOT NULL,
     token TEXT NOT NULL UNIQUE,
     token_type VARCHAR(50) NOT NULL DEFAULT 'BEARER',
     revoked BOOLEAN NOT NULL DEFAULT FALSE,
