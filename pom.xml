@@ -17,9 +17,11 @@
 
     <modules>
         <module>modules/approval-system</module>
-		<module>modules/cash-management</module>
+		<module>modules/cash-management-service</module>
+		<module>modules/cash-management-processor</module>
         <module>modules/user-service</module>
 		<module>modules/auth-service</module>
+		<module>modules/notification-processor</module>
 	</modules>
 
     <properties>

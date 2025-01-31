@@ -5,6 +5,6 @@
 
     <include file="changes/0001-initial-schema.sql" relativeToChangelogFile="true"/>
     <include file="changes/0002-create-table-account-transaction.sql" relativeToChangelogFile="true"/>
-    <include file="changes/0003-populate-table.sql" relativeToChangelogFile="true"/>
+    <include file="data/0001-populate-table-with-test-data.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
