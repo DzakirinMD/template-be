@@ -7,9 +7,8 @@
         <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>user-service</artifactId>
-    <name>user-service</name>
-
+    <artifactId>auth-service</artifactId>
+    <name>auth-service</name>
     <properties>
         <java.version>17</java.version>
     </properties>
