@@ -24,7 +24,7 @@ Follow these steps to get your development environment set up:
     ```
 3. **Stopping the Application**:
     ```bash
-    docker-compose down
+    docker-compose down -v
     ```   
 
 ## API Documentation
@@ -32,5 +32,16 @@ Follow these steps to get your development environment set up:
 - **API Docs (Web)**: View the API documentation in a web format at [API Docs](http://localhost:8080/api-docs).
 - **Download API Docs**: The API documentation can be downloaded in YAML format from [API Docs YAML](http://localhost:8080/api-docs.yaml).
 
+## Kafka-UI
+1. Click this this [kafka-ui](http://localhost:18080).
+2. Click `Configure new cluster` button.
+3. Put the Cluster name as "Localhost".
+4. In the Bootstrap Servers the **HOST** and **PORT** is the one in the KAFKA_ADVERTISED_LISTENERS.
+5. In this case the host = `template-be-kafka`, port = `9092`.
+6. Click `Validate` and the `Submit` once the connection is established.
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/DzakirinMD/template-be/blob/main/LICENSE) file for details.
+
+
+localhost:18080/kafka-ui
