@@ -24,7 +24,11 @@ Follow these steps to get your development environment set up:
     ```
 3. **Stopping the Application**:
     ```bash
-    docker-compose down -v
+    docker-compose down
+    ```   
+4. **Clear dev environment**
+   ```bash
+    docker-compose down -v and delete the "docker-data" folder if you want to clear all the dev environment
     ```   
 
 ## API Documentation

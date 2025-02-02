@@ -10,21 +10,14 @@ import net.dzakirin.accountservice.dto.response.UserDto;
 import net.dzakirin.accountservice.exception.InsufficientFundsException;
 import net.dzakirin.accountservice.exception.ResourceNotFoundException;
 import net.dzakirin.accountservice.mapper.AccountMapper;
-import net.dzakirin.accountservice.mapper.TransactionMapper;
 import net.dzakirin.accountservice.mapper.UserMapper;
 import net.dzakirin.accountservice.model.AccountEntity;
-import net.dzakirin.accountservice.model.TransactionEntity;
 import net.dzakirin.accountservice.producer.AccountDataChangedProducer;
-import net.dzakirin.accountservice.producer.TransactionDataChangedProducer;
 import net.dzakirin.accountservice.repo.AccountRepo;
-import net.dzakirin.accountservice.repo.TransactionRepo;
 import net.dzakirin.accountservice.repo.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -134,8 +127,12 @@ public class AccountService {
         // Record transaction
         var transactionDto = transactionService.recordTransaction(sourceAccount, destinationAccount, transferRequestDto.getAmount());
 
-        // Publish Transaction Event
+        // Publish Transaction related Event
+        var sourceAccountDto = AccountMapper.toAccountDto(sourceAccount);
+        var destinationAccountDto = AccountMapper.toAccountDto(destinationAccount);
         transactionService.publishTransactionDataChangedEvent(sourceAccount, transactionDto);
+        accountDataChangedProducer.publishEvent(sourceAccountDto.getAccountNumber(), sourceAccountDto, TransactionType.TRANSFER.getEventName());
+        accountDataChangedProducer.publishEvent(destinationAccountDto.getAccountNumber(), destinationAccountDto, TransactionType.TRANSFER.getEventName());
 
         return transactionDto;
     }
