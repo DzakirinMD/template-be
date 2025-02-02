@@ -2,7 +2,6 @@ package net.dzakirin.authservice.services;
 
 import lombok.RequiredArgsConstructor;
 import net.dzakirin.authservice.constant.TokenType;
-import net.dzakirin.authservice.dto.UserDto;
 import net.dzakirin.authservice.model.Token;
 import net.dzakirin.authservice.repository.TokenRepository;
 import org.springframework.stereotype.Service;

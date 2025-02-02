@@ -1,0 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS auth_service;
+CREATE SCHEMA IF NOT EXISTS user_service;
+CREATE SCHEMA IF NOT EXISTS account_service;
+CREATE SCHEMA IF NOT EXISTS cash_management_service;
