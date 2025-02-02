@@ -26,7 +26,7 @@ Follow these steps to get your development environment set up:
     ```bash
     docker-compose down
     ```   
-4. **Clear dev environment**
+5. **Clear dev environment**
    ```bash
     docker-compose down -v and delete the "docker-data" folder if you want to clear all the dev environment
     ```   
@@ -35,6 +35,7 @@ Follow these steps to get your development environment set up:
 - **Swagger UI**: Explore and interact with the API's endpoints via Swagger UI. Access it at [Swagger UI](http://localhost:8080/swagger-ui/index.html).
 - **API Docs (Web)**: View the API documentation in a web format at [API Docs](http://localhost:8080/api-docs).
 - **Download API Docs**: The API documentation can be downloaded in YAML format from [API Docs YAML](http://localhost:8080/api-docs.yaml).
+- **Kafka-ui**: The can be viewed from [Kafka-UI](localhost:18080/kafka-ui).
 
 ## Kafka-UI
 1. Click this this [kafka-ui](http://localhost:18080).
@@ -44,8 +45,19 @@ Follow these steps to get your development environment set up:
 5. In this case the host = `template-be-kafka`, port = `9092`.
 6. Click `Validate` and the `Submit` once the connection is established.
 
+## Further enhancement Idea
+Common Modules:
+- Create a common logging module for centralized logging functionality.
+- Find a way to split the security module from the user module.
+- Create a common-library and move EventWrapper and shared DTOs into it.
+
+Microservices Refactoring:
+- Separate user-service from account-service to enhance modularity and maintainability.
+- Develop a new microservice using Go (country-information-service) with GraphQL.
+- Create a new microservice for authentication (auth-service).
+
+Technical Improvements:
+- Convert Java 8 Instant to LocalDateTime where necessary.
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/DzakirinMD/template-be/blob/main/LICENSE) file for details.
-
-
-localhost:18080/kafka-ui
