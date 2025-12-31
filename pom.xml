@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.2</version>
+		<relativePath/>
+	</parent>
+	<groupId>net.dzakirin</groupId>
+	<artifactId>template-be</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>template-be</name>
+	<description>Template BE for funsies e-commerce</description>
+
+    <modules>
+		<module>modules/identity-service</module>
+		<module>modules/user-service</module>
+		<module>modules/order-management-service</module>
+		<module>modules/notification-service</module>
+		<module>modules/loyalty-service</module>
+		<module>modules/common-library</module>
+		<module>modules/module-dependency</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.dzakirin</groupId>
+				<artifactId>module-dependency</artifactId>
+				<version>${project.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

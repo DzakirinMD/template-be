@@ -1,0 +1,75 @@
+@startuml
+' This command is crucial to fix the error you saw:
+allow_mixing
+
+skinparam style strictuml
+skinparam componentStyle rectangle
+
+actor "Client\n(Web/Mobile)" as Client
+
+package "Security Domain" {
+    component [identity-service] as Identity
+    note right of Identity
+        <b>Responsibilities:</b>
+        - Login / Register (AuthN)
+        - Token Generation (JWT)
+        - RBAC Management (AuthZ)
+        - Password Hashing
+    end note
+
+    database "identity-service-db" {
+        entity "credentials" as Creds {
+            *id : UUID
+            --
+            email
+            password_hash
+        }
+        entity "roles" as Roles {
+            *id
+            --
+            role_name
+        }
+        entity "user_roles" as UserRoles
+    }
+}
+
+package "Business Domain" {
+    component [user-service] as UserSvc
+    note bottom of UserSvc
+        <b>Responsibilities:</b>
+        - Manage Shipping Addresses
+        - Manage Avatars / Bio
+        - User Preferences
+    end note
+
+    database "user-service-db" {
+        entity "profiles" as Profiles {
+            *user_id : UUID
+            --
+            name
+            avatar
+        }
+        entity "addresses" as Address
+    }
+}
+
+' Relationships
+
+Client --> Identity : 1. Login (Email/Pass)
+Identity --> Creds : Validate
+Identity --> UserRoles : Fetch Roles
+Identity --> Client : 2. Return JWT (Claims: ID, Role)
+
+Client --> UserSvc : 3. Get Profile (Header: Bearer JWT)
+UserSvc --> UserSvc : 4. Validate JWT Signature\n(Using Public Key)
+UserSvc --> Profiles : 5. Fetch Data using JWT 'sub' (ID)
+
+Identity -[hidden]-> UserSvc : Decoupled
+
+' DB Connections
+Identity --> Roles
+Identity --> UserRoles
+
+UserSvc --> Address
+
+@enduml

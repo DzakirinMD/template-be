@@ -1,0 +1,125 @@
+version: '3.1'
+name: template-be
+services:
+  db:
+    container_name: template-be-postgres
+    image: postgres:alpine
+    restart: always
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pg-volume:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  zookeeper:
+    container_name: template-be-zookeeper
+    image: confluentinc/cp-zookeeper:7.6.1
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    volumes:
+      -  ./docker-data/zoo-volume/data:/var/lib/zookeeper/data
+      -  ./docker-data/zoo-volume/log:/var/lib/zookeeper/log
+
+  kafka:
+    container_name: template-be-kafka
+    image: confluentinc/cp-kafka:7.6.1
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - 19092:19092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://template-be-kafka:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 20971520
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 20971520
+      KAFKA_CREATE_TOPICS: "order-data-changed:1:1"  # Ensure topic is created at startup
+    volumes:
+      - ./docker-data/kafka-volume/data:/var/lib/kafka/data
+
+  kafka-ui:
+    container_name: template-be-kafka-ui
+    image: provectuslabs/kafka-ui:v0.6.2
+    restart: always
+    ports:
+      - 18080:8080
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "localhost"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "template-be-kafka:9092"
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: "PLAINTEXT"
+    volumes:
+      - ./docker-data/kui-volume/kui:/etc/kafkaui
+
+  order-management-service:
+    container_name: template-be-order-service
+    build:
+      context: modules/order-management-service
+      dockerfile: modules/order-management-service/Dockerfile
+    restart: always
+    ports:
+      - "10003:10003"
+    depends_on:
+      - db
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/order_management_service_db?currentSchema=order_management_service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+  loyalty-service:
+    container_name: template-be-loyalty-service
+    build:
+      context: modules/loyalty-service
+      dockerfile: modules/loyalty-service/Dockerfile
+    restart: always
+    ports:
+      - "10005:10005"
+    depends_on:
+      - db
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/loyalty_service_db?currentSchema=loyalty_service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      CLIENT_INTERNAL_EMAIL_SERVICE_BASEURL: http://notification-service:10004/v1
+
+  notification-service:
+    container_name: template-be-notification-service
+    build:
+      context: modules/notification-service
+      dockerfile: modules/notification-service/Dockerfile
+    restart: always
+    ports:
+      - "10004:10004"
+    depends_on:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_USERNAME: <your.email>@gmail.com
+      SPRING_MAIL_PASSWORD: <your.password>
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+
+volumes:
+  pg-volume:

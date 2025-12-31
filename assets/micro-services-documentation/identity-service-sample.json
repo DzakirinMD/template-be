@@ -1,0 +1,13 @@
+{
+  // 1. Standard Claims
+  "sub": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",  // The stable User UUID (The Link)
+  "iss": "identity-service",                      // Who created this token?
+  "iat": 1703730000,                              // Issued At (Timestamp)
+  "exp": 1703733600,                              // Expires At (1 hour later)
+
+  // 2. Custom Claims (THIS IS THE IMPORTANT PART)
+  "roles": [
+    "ROLE_SELLER",
+    "ROLE_BUYER"
+  ]
+}
