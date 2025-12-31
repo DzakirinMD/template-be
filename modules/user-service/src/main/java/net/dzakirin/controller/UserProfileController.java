@@ -3,9 +3,10 @@ package net.dzakirin.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.dzakirin.common.dto.request.SignupRequest;
+import net.dzakirin.common.dto.response.BaseResponse;
 import net.dzakirin.common.dto.response.SignupResponse;
-import net.dzakirin.dto.request.UserProfileRequest;
-import net.dzakirin.entity.UserProfile;
+import net.dzakirin.dto.request.UpdateUserProfileRequest;
+import net.dzakirin.dto.response.UserProfileResponse;
 import net.dzakirin.service.UserProfileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
     
     @GetMapping("/profile")
-    public ResponseEntity<UserProfile> getUserProfile() {
+    public ResponseEntity<BaseResponse<UserProfileResponse>> getUserProfile() {
         UUID userId = getUserIdFromAuth();
         return ResponseEntity.ok(userProfileService.getProfile(userId));
     }
@@ -42,7 +43,7 @@ public class UserProfileController {
             @RequestHeader("X-Internal-Service-Secret") String secretKey,
             @Valid @RequestBody SignupRequest request) { // This DTO must include the UUID
 
-        // 1. Manual Security Check
+        // Manual Security Check
         if (!internalApiKey.equals(secretKey)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid Internal Key");
         }
@@ -51,9 +52,9 @@ public class UserProfileController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<UserProfile> updateProfile(@Valid @RequestBody UserProfileRequest request) {
+    public ResponseEntity<BaseResponse<UserProfileResponse>> updateProfile(@Valid @RequestBody UpdateUserProfileRequest request) {
         UUID userId = getUserIdFromAuth();
-        return ResponseEntity.ok(userProfileService.upsertProfile(userId, request));
+        return ResponseEntity.ok(userProfileService.updateProfile(userId, request));
     }
 
     // Helper method to extract User ID from JWT (via Security Context)
