@@ -1,13 +1,5 @@
 -- changeset dzakirin:0001-initial-schema.sql
 
--- Customers Table
-CREATE TABLE customers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL
-);
-
 -- Products Table
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -20,8 +12,7 @@ CREATE TABLE products (
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Order Products (Many-to-Many Relationship Table)

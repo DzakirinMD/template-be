@@ -10,11 +10,11 @@ import net.dzakirin.exception.InsufficientStockException
 import net.dzakirin.exception.ResourceNotFoundException
 import net.dzakirin.exception.ValidationException
 import net.dzakirin.mapper.OrderMapper
-import net.dzakirin.entity.Customer
+
 import net.dzakirin.entity.Order
 import net.dzakirin.entity.Product
 import net.dzakirin.producer.OrderDataChangedProducer
-import net.dzakirin.repository.CustomerRepository
+
 import net.dzakirin.repository.OrderRepository
 import net.dzakirin.repository.ProductRepository
 import org.springframework.data.domain.PageImpl
@@ -28,14 +28,13 @@ class OrderServiceTest extends Specification {
 
     OrderRepository orderRepository = Mock()
     ProductRepository productRepository = Mock()
-    CustomerRepository customerRepository = Mock()
     OrderDataChangedProducer orderDataChangedProducer = Mock()
 
     @Subject
     OrderService orderService
 
     def setup() {
-        orderService = new OrderService(orderRepository, productRepository, customerRepository, orderDataChangedProducer)
+        orderService = new OrderService(orderRepository, productRepository, orderDataChangedProducer)
     }
 
     def "getAllOrders: should return list of orders"() {
@@ -56,7 +55,7 @@ class OrderServiceTest extends Specification {
         given:
         def orderId = UUID.randomUUID()
         def customerId = UUID.randomUUID()
-        def order = new Order(id: orderId, orderDate: LocalDateTime.now(), customer: new Customer(id: customerId))
+        def order = new Order(id: orderId, orderDate: LocalDateTime.now(), customerId: customerId)
         order.orderProducts = [] // Ensure this is not null
 
         def orderResponse = new OrderResponse(id: orderId, customerId: customerId, orderDate: order.orderDate, orderProducts: [])
@@ -100,7 +99,7 @@ class OrderServiceTest extends Specification {
                 ])
                 .build()
 
-        def customer = new Customer(id: customerId)
+        def customer = customerId
         def product = new Product(id: productId, stock: 10)
 
         customerRepository.findById(customerId) >> Optional.of(customer)
@@ -144,7 +143,7 @@ class OrderServiceTest extends Specification {
         def customerId = UUID.randomUUID()
         def productId = UUID.randomUUID()
         def orderRequest = new OrderRequest(customerId: customerId, orderProducts: [new OrderProductRequest(productId: productId, quantity: 5)])
-        def customer = new Customer(id: customerId)
+        def customer = customerId
         def product = new Product(id: productId, stock: 2)
         customerRepository.findById(customerId) >> Optional.of(customer)
         productRepository.findAllById([productId]) >> [product]

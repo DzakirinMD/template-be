@@ -21,9 +21,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @Column(nullable = false)
+    private UUID customerId;
 
     @Column(nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now();

@@ -3,6 +3,7 @@ package net.dzakirin.mapper;
 import lombok.experimental.UtilityClass;
 import net.dzakirin.common.dto.event.OrderEvent;
 import net.dzakirin.common.dto.event.OrderProductEvent;
+import net.dzakirin.common.security.JwtUtils;
 import net.dzakirin.dto.response.OrderProductResponse;
 import net.dzakirin.dto.response.OrderResponse;
 import net.dzakirin.entity.Order;
@@ -15,13 +16,9 @@ import java.util.List;
 public class OrderMapper {
 
     public static OrderResponse toOrderResponse(Order order) {
-        if (order == null || order.getCustomer() == null) {
-            return null;
-        }
-
         return OrderResponse.builder()
                 .id(order.getId())
-                .customerId(order.getCustomer().getId())
+                .customerId(JwtUtils.getCurrentUserId())
                 .orderDate(order.getOrderDate())
                 .orderProducts(toOrderProductResponseList(order.getOrderProducts()))
                 .build();
@@ -56,14 +53,10 @@ public class OrderMapper {
     }
 
     public static OrderEvent toOrderEvent(Order order) {
-        if (order == null || order.getCustomer() == null) {
-            return null;
-        }
-
         return OrderEvent.builder()
                 .id(order.getId())
-                .customerId(order.getCustomer().getId())
-                .customerEmail(order.getCustomer().getEmail())
+                .customerId(JwtUtils.getCurrentUserId())
+                .customerEmail(JwtUtils.getCurrentUserEmail())
                 .orderDate(order.getOrderDate())
                 .orderProducts(toOrderProductEventList(order.getOrderProducts()))
                 .build();

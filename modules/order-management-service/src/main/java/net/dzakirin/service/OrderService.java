@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.dzakirin.common.dto.event.OrderEvent;
 import net.dzakirin.common.dto.response.BaseListResponse;
 import net.dzakirin.common.dto.response.BaseResponse;
+import net.dzakirin.common.security.JwtUtils;
 import net.dzakirin.constant.ErrorCodes;
 import net.dzakirin.constant.EventType;
 import net.dzakirin.dto.request.OrderProductRequest;
@@ -14,12 +15,10 @@ import net.dzakirin.exception.ResourceNotFoundException;
 import net.dzakirin.exception.ValidationException;
 import net.dzakirin.mapper.OrderMapper;
 import net.dzakirin.mapper.OrderProductMapper;
-import net.dzakirin.entity.Customer;
 import net.dzakirin.entity.Order;
 import net.dzakirin.entity.OrderProduct;
 import net.dzakirin.entity.Product;
 import net.dzakirin.producer.OrderDataChangedProducer;
-import net.dzakirin.repository.CustomerRepository;
 import net.dzakirin.repository.OrderRepository;
 import net.dzakirin.repository.ProductRepository;
 import org.springframework.data.domain.Page;
@@ -41,7 +40,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final CustomerRepository customerRepository;
     private final OrderDataChangedProducer orderDataChangedProducer;
 
     public BaseListResponse<OrderResponse> getAllOrders(Pageable pageable) {
@@ -76,14 +74,9 @@ public class OrderService {
         // Validate Stock Availability
         validateStockAvailability(orderRequest, productMap);
 
-        // Fetch Customer
-        Customer customer = customerRepository.findById(orderRequest.getCustomerId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorCodes.CUSTOMER_NOT_FOUND.getMessage(orderRequest.getCustomerId().toString())));
-
         // Create Order
         Order order = Order.builder()
-                .customer(customer)
+                .customerId(JwtUtils.getCurrentUserId())
                 .orderDate(LocalDateTime.now())
                 .build();
 
