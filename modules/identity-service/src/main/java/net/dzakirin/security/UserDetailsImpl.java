@@ -29,7 +29,7 @@ public class UserDetailsImpl implements UserDetails {
     // Factory method to build this object from UserCredential Entity
     public static UserDetailsImpl build(UserCredential user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
