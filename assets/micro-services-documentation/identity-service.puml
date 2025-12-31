@@ -44,7 +44,7 @@ package "Business Domain" {
 
     database "user-service-db" {
         entity "profiles" as Profiles {
-            *user_id : UUID
+            *id : UUID
             --
             name
             avatar
