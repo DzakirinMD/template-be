@@ -23,8 +23,8 @@ import java.util.UUID;
 public class UserProfile {
 
     @Id
-    @Column(name = "user_id", nullable = false, unique = true)
-    private UUID userId; // Matches the ID from Identity Service
+    @Column(name = "id", nullable = false, unique = true)
+    private UUID id; // Matches the ID from Identity Service
 
     @Column(nullable = false)
     private String firstName;

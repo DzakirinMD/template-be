@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtils {
 
-    @Value("${application.name}")
+    @Value("${spring.application.name}")
     private String appName;
 
     @Value("${application.security.jwt.secret-key}")

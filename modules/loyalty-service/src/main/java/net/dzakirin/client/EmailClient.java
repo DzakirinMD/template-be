@@ -14,10 +14,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EmailClient {
 
-    private final WebClient webClient;
-
     @Value("${client.internal.notification-service.baseurl}")
     private String baseUrl;
+
+    private final WebClient webClient;
 
     public void sendLoyaltyPointsEmail(UUID customerId, String customerEmail, int pointsAwarded) {
         String emailUrl = String.format("%s/emails/send-loyalty-points", baseUrl.replaceAll("/$", "")); // Ensure no double slashes

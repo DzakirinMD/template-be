@@ -2,17 +2,18 @@ package net.dzakirin.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.dzakirin.common.dto.request.SignupRequest;
 import net.dzakirin.common.dto.response.BaseResponse;
+import net.dzakirin.common.dto.response.SignupResponse;
 import net.dzakirin.dto.request.LoginRequest;
-import net.dzakirin.dto.request.SignupRequest;
 import net.dzakirin.dto.response.LoginResponse;
-import net.dzakirin.security.UserDetailsImpl;
 import net.dzakirin.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -26,14 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        
-        authService.registerUser(
-            signUpRequest.getEmail(), 
-            signUpRequest.getPassword(), 
-            signUpRequest.getRoles()
-        );
-
-        return ResponseEntity.ok().body("User registered successfully!");
+    public ResponseEntity<BaseResponse<SignupResponse>> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        return ResponseEntity.ok(authService.registerUser(signUpRequest));
     }
 }
