@@ -16,7 +16,7 @@ import net.dzakirin.exception.TokenValidationException;
 import net.dzakirin.mapper.AuthMapper;
 import net.dzakirin.repository.RoleRepository;
 import net.dzakirin.repository.UserCredentialRepository;
-import net.dzakirin.security.JwtUtils;
+import net.dzakirin.security.TokenService;
 import net.dzakirin.security.UserDetailsImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +43,7 @@ public class AuthService {
     private final UserCredentialRepository userCredentialRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
-    private final JwtUtils jwtUtils;
+    private final TokenService tokenService;
     private final UserClient userClient;
 
     public BaseResponse<LoginResponse> authenticateUser(String email, String password) {
@@ -54,7 +54,7 @@ public class AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtUtils.generateJwtToken(authentication);
+            String jwt = tokenService.generateJwtToken(authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

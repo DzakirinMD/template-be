@@ -71,10 +71,21 @@ This project consists of **three microservices**:
 ---
 
 ## 🗄️ Database Schema
+### 🔹 Identity Service
+| Table Name         | Description                 |
+|--------------------|-----------------------------|
+| `roles`            | Stores roles.         |
+| `user_credentials` | Stores customer credentials. |
+| `user_roles`           | Stores customers role.      |
+
+### 🔹 User Service
+| Table Name | Description               |
+|------------|---------------------------|
+| `user_profiles` | Stores customer profiles. |
+
 ### 🔹 Order Management Service
 | Table Name | Description |
 |------------|------------|
-| `customers` | Stores customer details. |
 | `products` | Stores product information. |
 | `orders` | Stores orders linked to customers. |
 | `order_products` | Many-to-many mapping between orders and products. |
@@ -205,6 +216,8 @@ rm -rf docker-data      # Deletes all stored data
 ## 📜 Microservices API Documentation
 | Service            | Swagger URL                                                                      |
 |--------------------|----------------------------------------------------------------------------------|
+| 🔐 Identity Service | [http://localhost:10001/swagger-ui.html](http://localhost:10001/swagger-ui.html) |
+| 👤 User Service | [http://localhost:10002/swagger-ui.html](http://localhost:10002/swagger-ui.html) |
 | 📦 Order Management | [http://localhost:10003/swagger-ui.html](http://localhost:10003/swagger-ui.html) |
 | ✉️ Notification Service   | [http://localhost:10004/swagger-ui.html](http://localhost:10004/swagger-ui.html) |
 | 🏆 Loyalty Service  | [http://localhost:10005/swagger-ui.html](http://localhost:10005/swagger-ui.html) |

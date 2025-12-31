@@ -2,7 +2,6 @@ package net.dzakirin.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import net.dzakirin.exception.TokenValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtUtils {
+public class TokenService {
 
     @Value("${spring.application.name}")
     private String appName;
@@ -43,25 +42,5 @@ public class JwtUtils {
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key()).build()
-                .parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public boolean validateJwtToken(String authToken) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
-            return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            throw new TokenValidationException("Invalid JWT signature: " + e.getMessage());
-        } catch (ExpiredJwtException e) {
-            throw new TokenValidationException("JWT token is expired: " + e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            throw new TokenValidationException("JWT token is unsupported: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            throw new TokenValidationException("JWT claims string is empty: " + e.getMessage());
-        }
     }
 }

@@ -5,14 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.dzakirin.common.dto.request.SignupRequest;
 import net.dzakirin.common.dto.response.BaseResponse;
 import net.dzakirin.common.dto.response.SignupResponse;
+import net.dzakirin.common.security.JwtUtils;
 import net.dzakirin.dto.request.UpdateUserProfileRequest;
 import net.dzakirin.dto.response.UserProfileResponse;
 import net.dzakirin.service.UserProfileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,7 +29,7 @@ public class UserProfileController {
     
     @GetMapping("/profile")
     public ResponseEntity<BaseResponse<UserProfileResponse>> getUserProfile() {
-        UUID userId = getUserIdFromAuth();
+        UUID userId = JwtUtils.getCurrentUserId();
         return ResponseEntity.ok(userProfileService.getProfile(userId));
     }
 
@@ -53,14 +52,7 @@ public class UserProfileController {
 
     @PutMapping("/profile")
     public ResponseEntity<BaseResponse<UserProfileResponse>> updateProfile(@Valid @RequestBody UpdateUserProfileRequest request) {
-        UUID userId = getUserIdFromAuth();
+        UUID userId = JwtUtils.getCurrentUserId();
         return ResponseEntity.ok(userProfileService.updateProfile(userId, request));
-    }
-
-    // Helper method to extract User ID from JWT (via Security Context)
-    private UUID getUserIdFromAuth() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String principle = auth.getName();
-        return UUID.fromString(principle);
     }
 }
