@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
+import static net.dzakirin.common.constant.AppConstants.HEADER_INTERNAL_API_KEY;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -39,12 +41,12 @@ public class UserProfileController {
      */
     @PostMapping("/internal/create")
     public ResponseEntity<SignupResponse> createInternalUser(
-            @RequestHeader("X-Internal-Service-Secret") String secretKey,
+            @RequestHeader(HEADER_INTERNAL_API_KEY) String secretKey,
             @Valid @RequestBody SignupRequest request) { // This DTO must include the UUID
 
         // Manual Security Check
         if (!internalApiKey.equals(secretKey)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid Internal Key");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Internal Key");
         }
 
         return ResponseEntity.ok(userProfileService.createProfileInternal(request));

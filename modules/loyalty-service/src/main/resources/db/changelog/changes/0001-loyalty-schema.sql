@@ -3,7 +3,7 @@
 -- Loyalty Points Table (Tracks Customer's Total Points)
 CREATE TABLE loyalty_points (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_id UUID NOT NULL UNIQUE, -- Store customer UUID (No FK to customers)
+    customer_id UUID NOT NULL UNIQUE,
     total_points INT NOT NULL DEFAULT 0,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
