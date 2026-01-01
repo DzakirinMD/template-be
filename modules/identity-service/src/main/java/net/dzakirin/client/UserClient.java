@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import static net.dzakirin.common.constant.AppConstants.HEADER_INTERNAL_API_KEY;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class UserClient {
 
         return webClient.post()
                 .uri(url)
-                .header("X-Internal-Service-Secret", internalApiKey)
+                .header(HEADER_INTERNAL_API_KEY, internalApiKey)
                 .bodyValue(request)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response ->

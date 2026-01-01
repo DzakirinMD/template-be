@@ -31,8 +31,12 @@ public class OrderProcessingService {
                 .msgBody(EmailTemplate.orderConfirmationTemplate(orderEvent, totalAmount))
                 .build();
 
-        emailService.sendEmail(emailDetails);
-        log.info("Order confirmation email has been sent to {}", emailDetails.getRecipient());
+        try {
+            emailService.sendEmail(emailDetails);
+            log.info("Order confirmation email has been sent to {}", emailDetails.getRecipient());
+        } catch (Exception e) {
+            log.error("Failed to send order confirmation email for Order ID: {}", orderEvent.getId());
+        }
     }
 
     public void sendLoyaltyPointsEmail(EmailRequest emailRequest) {
@@ -45,7 +49,11 @@ public class OrderProcessingService {
                 .msgBody(EmailTemplate.loyaltyPointsTemplate(emailRequest))
                 .build();
 
-        emailService.sendEmail(emailDetails);
-        log.info("Loyalty points email has been sent to {}", emailDetails.getRecipient());
+        try {
+            emailService.sendEmail(emailDetails);
+            log.info("Loyalty points email has been sent to {}", emailDetails.getRecipient());
+        } catch (Exception e) {
+            log.error("Failed to send loyalty points email for {}", emailDetails.getRecipient());
+        }
     }
 }

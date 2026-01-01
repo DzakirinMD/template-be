@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static net.dzakirin.common.constant.AppConstants.AUTH_HEADER;
+import static net.dzakirin.common.constant.AppConstants.TOKEN_PREFIX;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -30,9 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
+        String header = request.getHeader(AUTH_HEADER);
 
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }

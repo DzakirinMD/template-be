@@ -29,6 +29,7 @@ public class EmailService {
             log.info("Email sent to {}", emailDetails.getRecipient());
         } catch (Exception e) {
             log.error("Error while sending email: {}", e.toString());
+            throw new RuntimeException(e);
         }
     }
 }
