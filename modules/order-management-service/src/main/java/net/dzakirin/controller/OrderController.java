@@ -14,6 +14,7 @@ import net.dzakirin.service.OrderService;
 import net.dzakirin.utils.PaginationUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,8 +26,27 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @Operation(summary = "Get all orders with pagination")
+    @Operation(summary = "Get user orders with pagination")
     @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('SELLER')")
+    public ResponseEntity<BaseListResponse<OrderResponse>> getMyOrders(
+            @Parameter(description = "Page number (starts from 1)", example = "1")
+            @RequestParam(defaultValue = "1") int page,
+
+            @Parameter(description = "Page size", example = "5")
+            @RequestParam(defaultValue = "5") int size,
+
+            @Parameter(description = "Sorting field",
+                    array = @ArraySchema(schema = @Schema(allowableValues = {"orderDate", "customerId"},
+                            type = "string")))
+            @RequestParam(defaultValue = "orderDate") String[] sort) {
+        Pageable pageable = PaginationUtils.getPageRequest(page, size, sort);
+        return ResponseEntity.ok(orderService.getMyOrders(pageable));
+    }
+
+    @Operation(summary = "Get all orders with pagination")
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseListResponse<OrderResponse>> getAllOrders(
             @Parameter(description = "Page number (starts from 1)", example = "1")
             @RequestParam(defaultValue = "1") int page,
@@ -45,12 +65,14 @@ public class OrderController {
 
     @Operation(summary = "Get order by ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<OrderResponse>> getOrderById(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @Operation(summary = "Create a new order")
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<BaseResponse<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.createOrder(orderRequest));
     }

@@ -5,7 +5,8 @@ CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    stock INT NOT NULL
+    stock INT NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 -- Orders (The Header: Who, When, Status, Total)

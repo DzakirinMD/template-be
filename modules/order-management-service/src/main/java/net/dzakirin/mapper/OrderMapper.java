@@ -2,9 +2,9 @@ package net.dzakirin.mapper;
 
 import lombok.experimental.UtilityClass;
 import net.dzakirin.common.dto.event.OrderEvent;
-import net.dzakirin.common.dto.event.OrderProductEvent;
+import net.dzakirin.common.dto.event.OrderItemEvent;
 import net.dzakirin.common.security.JwtUtils;
-import net.dzakirin.dto.response.OrderProductResponse;
+import net.dzakirin.dto.response.OrderItemsResponse;
 import net.dzakirin.dto.response.OrderResponse;
 import net.dzakirin.entity.Order;
 import net.dzakirin.entity.OrderItem;
@@ -20,7 +20,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .customerId(JwtUtils.getCurrentUserId())
                 .orderDate(order.getOrderDate())
-                .orderProducts(toOrderProductResponseList(order.getOrderItems()))
+                .orderItems(toOrderProductResponseList(order.getOrderItems()))
                 .build();
     }
 
@@ -30,22 +30,22 @@ public class OrderMapper {
                 .toList();
     }
 
-    public static List<OrderProductResponse> toOrderProductResponseList(List<OrderItem> orderItems) {
+    public static List<OrderItemsResponse> toOrderProductResponseList(List<OrderItem> orderItems) {
         return orderItems.stream()
                 .map(OrderMapper::toOrderProductResponse)
                 .toList();
     }
 
-    public static OrderProductResponse toOrderProductResponse(OrderItem orderItem) {
+    public static OrderItemsResponse toOrderProductResponse(OrderItem orderItem) {
         if (orderItem == null || orderItem.getProduct() == null) {
-            return OrderProductResponse.builder()
+            return OrderItemsResponse.builder()
                     .productId(null)
                     .productTitle("Unknown Product")
                     .quantity(0)
                     .build();
         }
 
-        return OrderProductResponse.builder()
+        return OrderItemsResponse.builder()
                 .productId(orderItem.getProduct().getId())
                 .productTitle(orderItem.getProduct().getTitle())
                 .quantity(orderItem.getQuantity())
@@ -58,19 +58,19 @@ public class OrderMapper {
                 .customerId(JwtUtils.getCurrentUserId())
                 .customerEmail(JwtUtils.getCurrentUserEmail())
                 .orderDate(order.getOrderDate())
-                .orderProducts(toOrderProductEventList(order.getOrderItems()))
+                .orderItems(toOrderProductEventList(order.getOrderItems()))
                 .build();
     }
 
-    public static List<OrderProductEvent> toOrderProductEventList(List<OrderItem> orderItems) {
+    public static List<OrderItemEvent> toOrderProductEventList(List<OrderItem> orderItems) {
         return orderItems.stream()
                 .map(OrderMapper::toOrderProductEvent)
                 .toList();
     }
 
-    public static OrderProductEvent toOrderProductEvent(OrderItem orderItem) {
+    public static OrderItemEvent toOrderProductEvent(OrderItem orderItem) {
         if (orderItem == null || orderItem.getProduct() == null) {
-            return OrderProductEvent.builder()
+            return OrderItemEvent.builder()
                     .productId(null)
                     .productTitle("Unknown Product")
                     .quantity(0)
@@ -78,7 +78,7 @@ public class OrderMapper {
                     .build();
         }
 
-        return OrderProductEvent.builder()
+        return OrderItemEvent.builder()
                 .productId(orderItem.getProduct().getId())
                 .productTitle(orderItem.getProduct().getTitle())
                 .quantity(orderItem.getQuantity())

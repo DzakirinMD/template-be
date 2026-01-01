@@ -14,6 +14,7 @@ import net.dzakirin.service.ProductService;
 import net.dzakirin.utils.PaginationUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -50,12 +51,14 @@ public class ProductController {
 
     @Operation(summary = "Create a new product")
     @PostMapping
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<ProductResponse>> createProduct(@Valid @RequestBody ProductRequest productRequest) {
         return ResponseEntity.ok(productService.createProduct(productRequest));
     }
 
     @Operation(summary = "Update an existing product (supports partial update)")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<ProductResponse>> updateProduct(
             @PathVariable UUID id,
             @Valid @RequestBody ProductRequest productRequest) {
@@ -64,6 +67,7 @@ public class ProductController {
 
     @Operation(summary = "Delete product by ID")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();

@@ -26,7 +26,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public BaseListResponse<ProductResponse> getAllProducts(Pageable pageable) {
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = productRepository.findAllByDeletedFalse(pageable);
 
         return BaseListResponse.<ProductResponse>builder()
                 .success(true)
@@ -38,7 +38,7 @@ public class ProductService {
     }
 
     public BaseResponse<ProductResponse> getProductById(UUID productId) {
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdAndDeletedFalse(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.PRODUCT_NOT_FOUND.getMessage(productId.toString())));
 
         return BaseResponse.<ProductResponse>builder()
@@ -91,10 +91,10 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UUID productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException(ErrorCodes.PRODUCT_NOT_FOUND.getMessage(productId.toString()));
-        }
-        productRepository.deleteById(productId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.PRODUCT_NOT_FOUND.getMessage(productId.toString())));
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
     private void validateProductRequest(ProductRequest productRequest, boolean isCreate) {

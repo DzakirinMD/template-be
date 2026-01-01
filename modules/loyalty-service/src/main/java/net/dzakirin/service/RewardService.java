@@ -94,7 +94,7 @@ public class RewardService {
      * Calculate the total order amount.
      */
     private BigDecimal calculateOrderTotal(OrderEvent orderEvent) {
-        return orderEvent.getOrderProducts().stream()
+        return orderEvent.getOrderItems().stream()
                 .map(orderProduct -> orderProduct.getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
