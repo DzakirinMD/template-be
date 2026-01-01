@@ -2,7 +2,9 @@ package net.dzakirin.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.dzakirin.constant.OrderStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,8 +27,16 @@ public class Order {
     private UUID customerId;
 
     @Column(nullable = false)
+    private BigDecimal totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
+    @Builder.Default
+    @Column(nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderProduct> orderProducts;
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems;
 }

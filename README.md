@@ -88,7 +88,7 @@ This project consists of **three microservices**:
 |------------|------------|
 | `products` | Stores product information. |
 | `orders` | Stores orders linked to customers. |
-| `order_products` | Many-to-many mapping between orders and products. |
+| `order_items` | Many-to-many mapping between orders and products. |
 
 ### 🔹 Loyalty Service
 | Table Name | Description |

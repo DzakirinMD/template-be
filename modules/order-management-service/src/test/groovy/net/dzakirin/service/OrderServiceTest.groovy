@@ -56,7 +56,7 @@ class OrderServiceTest extends Specification {
         def orderId = UUID.randomUUID()
         def customerId = UUID.randomUUID()
         def order = new Order(id: orderId, orderDate: LocalDateTime.now(), customerId: customerId)
-        order.orderProducts = [] // Ensure this is not null
+        order.orderItems = [] // Ensure this is not null
 
         def orderResponse = new OrderResponse(id: orderId, customerId: customerId, orderDate: order.orderDate, orderProducts: [])
 

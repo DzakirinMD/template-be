@@ -16,7 +16,7 @@ import net.dzakirin.exception.ValidationException;
 import net.dzakirin.mapper.OrderMapper;
 import net.dzakirin.mapper.OrderProductMapper;
 import net.dzakirin.entity.Order;
-import net.dzakirin.entity.OrderProduct;
+import net.dzakirin.entity.OrderItem;
 import net.dzakirin.entity.Product;
 import net.dzakirin.producer.OrderDataChangedProducer;
 import net.dzakirin.repository.OrderRepository;
@@ -81,11 +81,11 @@ public class OrderService {
                 .build();
 
         // Convert OrderRequest to OrderProducts using the fetched product map
-        List<OrderProduct> orderProducts = OrderProductMapper.toOrderProductList(orderRequest, order, productMap);
-        order.setOrderProducts(orderProducts);
+        List<OrderItem> orderItems = OrderProductMapper.toOrderProductList(orderRequest, order, productMap);
+        order.setOrderItems(orderItems);
 
         // Deduct Stock
-        deductStock(orderProducts);
+        deductStock(orderItems);
 
         // Save and Publish event
         orderRepository.save(order);
@@ -157,11 +157,11 @@ public class OrderService {
     /**
      * Deduct stock for ordered products.
      */
-    private void deductStock(List<OrderProduct> orderProducts) {
-        for (OrderProduct orderProduct : orderProducts) {
-            Product product = orderProduct.getProduct();
-            product.setStock(product.getStock() - orderProduct.getQuantity());
+    private void deductStock(List<OrderItem> orderItems) {
+        for (OrderItem orderItem : orderItems) {
+            Product product = orderItem.getProduct();
+            product.setStock(product.getStock() - orderItem.getQuantity());
         }
-        productRepository.saveAll(orderProducts.stream().map(OrderProduct::getProduct).toList());
+        productRepository.saveAll(orderItems.stream().map(OrderItem::getProduct).toList());
     }
 }

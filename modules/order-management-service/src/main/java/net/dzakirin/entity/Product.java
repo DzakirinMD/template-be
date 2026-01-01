@@ -28,7 +28,4 @@ public class Product {
 
     @Column(nullable = false)
     private Integer stock;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<OrderProduct> orderProducts;
 }
