@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,7 +26,8 @@ public class LoyaltyPointsController {
     private final LoyaltyPointsService loyaltyPointsService;
 
     @Operation(summary = "Get all loyalty points with pagination")
-    @GetMapping
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseListResponse<LoyaltyPointsResponse>> getAllLoyaltyPoints(
             @Parameter(description = "Page number (starts from 1)", example = "1")
             @RequestParam(defaultValue = "1") int page,
@@ -43,7 +45,16 @@ public class LoyaltyPointsController {
 
     @Operation(summary = "Get loyalty points by Customer ID")
     @GetMapping("/{customerId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<LoyaltyPointsResponse>> getLoyaltyPointsByCustomerId(@PathVariable UUID customerId) {
         return ResponseEntity.ok(loyaltyPointsService.getLoyaltyPointsByCustomerId(customerId));
+    }
+
+
+    @Operation(summary = "Get User's loyalty points")
+    @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('SELLER')")
+    public ResponseEntity<BaseResponse<LoyaltyPointsResponse>> getMyLoyaltyPoints() {
+        return ResponseEntity.ok(loyaltyPointsService.getMyLoyaltyPoints());
     }
 }

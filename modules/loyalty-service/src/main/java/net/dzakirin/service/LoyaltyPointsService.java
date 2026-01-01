@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.dzakirin.ErrorCodes;
 import net.dzakirin.common.dto.response.BaseListResponse;
 import net.dzakirin.common.dto.response.BaseResponse;
+import net.dzakirin.common.security.JwtUtils;
 import net.dzakirin.exception.ResourceNotFoundException;
 import net.dzakirin.dto.response.LoyaltyPointsResponse;
 import net.dzakirin.mapper.LoyaltyPointsMapper;
@@ -34,6 +35,18 @@ public class LoyaltyPointsService {
     }
 
     public BaseResponse<LoyaltyPointsResponse> getLoyaltyPointsByCustomerId(UUID customerId) {
+        LoyaltyPoints product = loyaltyPointsRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.LOYALTY_POINTS_NOT_FOUND.getMessage(customerId.toString())));
+
+        return BaseResponse.<LoyaltyPointsResponse>builder()
+                .success(true)
+                .message("Loyalty Points found")
+                .data(LoyaltyPointsMapper.toLoyaltyPointsResponse(product))
+                .build();
+    }
+
+    public BaseResponse<LoyaltyPointsResponse> getMyLoyaltyPoints() {
+        UUID customerId = JwtUtils.getCurrentUserId();
         LoyaltyPoints product = loyaltyPointsRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.LOYALTY_POINTS_NOT_FOUND.getMessage(customerId.toString())));
 
