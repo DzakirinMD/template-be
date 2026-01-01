@@ -16,5 +16,5 @@ public class OrderEvent {
     private LocalDateTime orderDate;
     private UUID customerId;
     private String customerEmail;
-    private List<OrderProductEvent> orderProducts;
+    private List<OrderItemEvent> orderItems;
 }

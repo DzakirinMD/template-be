@@ -1,11 +1,14 @@
 package net.dzakirin.controller;
 
 import net.dzakirin.common.dto.response.BaseResponse;
+import net.dzakirin.common.security.JwtUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/test")
@@ -48,5 +51,13 @@ public class TestController {
                 .message("Admin Board.")
                 .data("Seen only by ADMIN")
                 .build());
+    }
+
+    @GetMapping("/principal-information")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> testEndpoint() {
+        UUID userId = JwtUtils.getCurrentUserId();
+        String email = JwtUtils.getCurrentUserEmail();
+        return ResponseEntity.ok(String.format("userId: %s\nemail: %s", userId, email));
     }
 }

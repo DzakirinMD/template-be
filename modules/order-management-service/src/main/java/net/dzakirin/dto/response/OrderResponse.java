@@ -19,5 +19,5 @@ public class OrderResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime orderDate;
     private UUID customerId;
-    private List<OrderProductResponse> orderProducts;
+    private List<OrderItemsResponse> orderItems;
 }

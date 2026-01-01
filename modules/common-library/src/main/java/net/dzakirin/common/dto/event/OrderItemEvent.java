@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class OrderProductEvent {
+public class OrderItemEvent {
     private UUID productId;
     private String productTitle;
     private int quantity;

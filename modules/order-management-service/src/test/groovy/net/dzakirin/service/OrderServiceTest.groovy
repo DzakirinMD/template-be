@@ -1,7 +1,7 @@
 package net.dzakirin.service
 
 import net.dzakirin.constant.ErrorCodes
-import net.dzakirin.dto.request.OrderProductRequest
+import net.dzakirin.dto.request.OrderItemRequest
 import net.dzakirin.dto.request.OrderRequest
 import net.dzakirin.common.dto.response.BaseListResponse
 import net.dzakirin.common.dto.response.BaseResponse
@@ -10,11 +10,11 @@ import net.dzakirin.exception.InsufficientStockException
 import net.dzakirin.exception.ResourceNotFoundException
 import net.dzakirin.exception.ValidationException
 import net.dzakirin.mapper.OrderMapper
-import net.dzakirin.entity.Customer
+
 import net.dzakirin.entity.Order
 import net.dzakirin.entity.Product
 import net.dzakirin.producer.OrderDataChangedProducer
-import net.dzakirin.repository.CustomerRepository
+
 import net.dzakirin.repository.OrderRepository
 import net.dzakirin.repository.ProductRepository
 import org.springframework.data.domain.PageImpl
@@ -28,14 +28,13 @@ class OrderServiceTest extends Specification {
 
     OrderRepository orderRepository = Mock()
     ProductRepository productRepository = Mock()
-    CustomerRepository customerRepository = Mock()
     OrderDataChangedProducer orderDataChangedProducer = Mock()
 
     @Subject
     OrderService orderService
 
     def setup() {
-        orderService = new OrderService(orderRepository, productRepository, customerRepository, orderDataChangedProducer)
+        orderService = new OrderService(orderRepository, productRepository, orderDataChangedProducer)
     }
 
     def "getAllOrders: should return list of orders"() {
@@ -56,10 +55,10 @@ class OrderServiceTest extends Specification {
         given:
         def orderId = UUID.randomUUID()
         def customerId = UUID.randomUUID()
-        def order = new Order(id: orderId, orderDate: LocalDateTime.now(), customer: new Customer(id: customerId))
-        order.orderProducts = [] // Ensure this is not null
+        def order = new Order(id: orderId, orderDate: LocalDateTime.now(), customerId: customerId)
+        order.orderItems = [] // Ensure this is not null
 
-        def orderResponse = new OrderResponse(id: orderId, customerId: customerId, orderDate: order.orderDate, orderProducts: [])
+        def orderResponse = new OrderResponse(id: orderId, customerId: customerId, orderDate: order.orderDate, setOrderItems: [])
 
         orderRepository.findById(orderId) >> Optional.of(order)
 
@@ -92,15 +91,15 @@ class OrderServiceTest extends Specification {
         def productId = UUID.randomUUID()
         def orderRequest = OrderRequest.builder()
                 .customerId(customerId)
-                .orderProducts([
-                        OrderProductRequest.builder()
+                .orderItems([
+                        OrderItemRequest.builder()
                                 .productId(productId)
                                 .quantity(2)
                                 .build()
                 ])
                 .build()
 
-        def customer = new Customer(id: customerId)
+        def customer = customerId
         def product = new Product(id: productId, stock: 10)
 
         customerRepository.findById(customerId) >> Optional.of(customer)
@@ -122,8 +121,8 @@ class OrderServiceTest extends Specification {
 
         def orderRequest = OrderRequest.builder()
                 .customerId(customerId)
-                .orderProducts([
-                        OrderProductRequest.builder().productId(productId).quantity(1).build()
+                .orderItems([
+                        OrderItemRequest.builder().productId(productId).quantity(1).build()
                 ])
                 .build()
 
@@ -143,8 +142,8 @@ class OrderServiceTest extends Specification {
         given:
         def customerId = UUID.randomUUID()
         def productId = UUID.randomUUID()
-        def orderRequest = new OrderRequest(customerId: customerId, orderProducts: [new OrderProductRequest(productId: productId, quantity: 5)])
-        def customer = new Customer(id: customerId)
+        def orderRequest = new OrderRequest(customerId: customerId, setOrderItems: [new OrderItemRequest(productId: productId, quantity: 5)])
+        def customer = customerId
         def product = new Product(id: productId, stock: 2)
         customerRepository.findById(customerId) >> Optional.of(customer)
         productRepository.findAllById([productId]) >> [product]
@@ -164,9 +163,9 @@ class OrderServiceTest extends Specification {
 
         def orderRequest = OrderRequest.builder()
                 .customerId(customerId)
-                .orderProducts([
-                        OrderProductRequest.builder().productId(productId1).quantity(2).build(),
-                        OrderProductRequest.builder().productId(productId2).quantity(3).build()
+                .orderItems([
+                        OrderItemRequest.builder().productId(productId1).quantity(2).build(),
+                        OrderItemRequest.builder().productId(productId2).quantity(3).build()
                 ])
                 .build()
 
@@ -192,9 +191,9 @@ class OrderServiceTest extends Specification {
 
         def orderRequest = OrderRequest.builder()
                 .customerId(customerId)
-                .orderProducts([
-                        OrderProductRequest.builder().productId(productId1).quantity(2).build(),
-                        OrderProductRequest.builder().productId(productId2).quantity(0).build() // Invalid quantity
+                .orderItems([
+                        OrderItemRequest.builder().productId(productId1).quantity(2).build(),
+                        OrderItemRequest.builder().productId(productId2).quantity(0).build() // Invalid quantity
                 ])
                 .build()
 

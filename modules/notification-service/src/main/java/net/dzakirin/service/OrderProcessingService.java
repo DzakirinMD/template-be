@@ -21,7 +21,7 @@ public class OrderProcessingService {
                 orderEvent.getId()
         );
 
-        double totalAmount = orderEvent.getOrderProducts().stream()
+        double totalAmount = orderEvent.getOrderItems().stream()
                 .mapToDouble(product -> product.getPrice().doubleValue() * product.getQuantity())
                 .sum();
 

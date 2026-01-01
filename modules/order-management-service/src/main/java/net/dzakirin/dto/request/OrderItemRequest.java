@@ -1,5 +1,7 @@
-package net.dzakirin.dto.response;
+package net.dzakirin.dto.request;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +13,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderProductResponse {
+public class OrderItemRequest {
+    @NotNull
     private UUID productId;
-    private String productTitle;
+
+    @Min(1)
     private int quantity;
 }

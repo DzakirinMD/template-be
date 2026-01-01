@@ -8,9 +8,9 @@ import net.dzakirin.common.dto.request.EmailRequest;
 public class EmailTemplate {
 
     public static String orderConfirmationTemplate(OrderEvent orderEvent, double totalAmount) {
-        StringBuilder orderProductsInfo = new StringBuilder();
-        orderEvent.getOrderProducts().forEach(product ->
-                orderProductsInfo.append("  - %s (Qty: %d) - RM %.2f\n".formatted(
+        StringBuilder orderedItemsInfo = new StringBuilder();
+        orderEvent.getOrderItems().forEach(product ->
+                orderedItemsInfo.append("  - %s (Qty: %d) - RM %.2f\n".formatted(
                         product.getProductTitle(), product.getQuantity(), product.getPrice()))
         );
 
@@ -45,7 +45,7 @@ public class EmailTemplate {
                 orderEvent.getId(),
                 orderEvent.getOrderDate(),
                 orderEvent.getCustomerId(),
-                orderProductsInfo.toString(),
+                orderedItemsInfo.toString(),
                 totalAmount
         );
     }

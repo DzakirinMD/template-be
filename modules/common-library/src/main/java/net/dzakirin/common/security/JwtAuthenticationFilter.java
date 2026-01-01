@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .getBody();
 
             String userId = claims.getSubject(); // This is the ID from Identity Service
+            String email = claims.get("email", String.class);
             String roles = claims.get("roles", String.class);
 
             // Convert roles string "ADMIN,USER" to GrantedAuthority list
@@ -57,9 +58,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
+            // customer principle to store more information of the user in the security context
+            UserPrincipal principal = new UserPrincipal(userId, email);
+
             // Create Authentication object
             UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                    new UsernamePasswordAuthenticationToken(principal, token, authorities);
 
             // Set it in the context
             SecurityContextHolder.getContext().setAuthentication(authentication);
